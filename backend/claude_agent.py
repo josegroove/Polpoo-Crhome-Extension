@@ -202,6 +202,43 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "verificar_permiso_crear_usuarios",
+            "description": (
+                "Comprueba si el usuario tiene permisos para crear nuevos usuarios en Polpoo. "
+                "SIEMPRE llama a esta función antes de intentar crear un usuario o cuando alguien pregunte "
+                "por qué no puede crear usuarios. Si canAddUser es false, informa que su rol no tiene permisos."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "tipos_usuario",
+            "description": "Devuelve los tipos de usuario disponibles en Polpoo (ej: Empleado, Autónomo) con su ID, nombre, estado activo y fechas de creación y modificación.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "totalizadores_usuarios",
+            "description": "Devuelve un resumen con el total de usuarios, cuántos están activos, inactivos y cuántos son de tipo empresa o autónomo.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "listar_usuarios",
             "description": "Lista los usuarios de la cuenta Polpoo. Permite buscar por nombre, email o filtrar por tipo de usuario y perfil. Devuelve nombre, apellido, email, teléfono, perfil, tipo y último acceso.",
             "parameters": {
@@ -295,6 +332,12 @@ async def _execute_tool(tool_name: str, tool_input: dict, polpoo: PolpooClient) 
                 tool_input.get("client_id"),
                 tool_input.get("name"),
             )
+        elif tool_name == "verificar_permiso_crear_usuarios":
+            result = await polpoo.verificar_permiso_crear_usuarios()
+        elif tool_name == "tipos_usuario":
+            result = await polpoo.tipos_usuario()
+        elif tool_name == "totalizadores_usuarios":
+            result = await polpoo.totalizadores_usuarios()
         elif tool_name == "listar_usuarios":
             result = await polpoo.listar_usuarios(
                 search=tool_input.get("search"),

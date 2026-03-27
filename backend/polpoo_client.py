@@ -135,6 +135,35 @@ class PolpooClient:
             resp = await client.post(f"{BASE_URL}/integration/tracking", json=payload, headers=await self._headers())
             return resp.json()
 
+    async def verificar_permiso_crear_usuarios(self) -> dict:
+        """Comprueba si el usuario autenticado tiene permisos para crear nuevos usuarios."""
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.get(
+                f"{BASE_URL}/can_add_users_subscription",
+                headers=await self._admin_headers(),
+            )
+            return resp.json()
+
+    async def tipos_usuario(self) -> dict:
+        """Devuelve los tipos de usuario disponibles (Empleado, Autónomo, etc.) con fechas de creación."""
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                f"{BASE_URL}/user_type",
+                json={},
+                headers=await self._admin_headers(),
+            )
+            return resp.json()
+
+    async def totalizadores_usuarios(self) -> dict:
+        """Devuelve totales de usuarios: activos, inactivos y por tipología."""
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                f"{BASE_URL}/user_totalized",
+                json={},
+                headers=await self._admin_headers(),
+            )
+            return resp.json()
+
     async def listar_usuarios(
         self,
         search: str = None,
