@@ -137,9 +137,11 @@ class PolpooClient:
         async with httpx.AsyncClient(timeout=30) as client:
             resp = await client.get(
                 f"{BASE_URL}/route/route_planning_route/assigned_datatables",
-                params={"dateDeliveryStart": date},
+                params={"dateDeliveryStart": date, "start": 0, "length": 200},
                 headers=await self._headers(),
             )
+            if not resp.is_success:
+                return {"error": f"HTTP {resp.status_code}", "detail": resp.text[:500]}
             return resp.json()
 
     async def tracking_evento(self, payload: dict) -> dict:
