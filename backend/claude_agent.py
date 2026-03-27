@@ -252,6 +252,20 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "consultar_rutas_dia",
+            "description": "Consulta todas las rutas asignadas y su información completa para un día concreto: chóferes, vehículos, puntos de entrega, estados y horarios.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "date": {"type": "string", "description": "Fecha en formato YYYY-MM-DD"},
+                },
+                "required": ["date"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "tracking_evento",
             "description": "Registra un evento de tracking: 10=inicio ruta, 11=fin ruta, 1=entrega, 2=anulación.",
             "parameters": {
@@ -337,6 +351,8 @@ async def _execute_tool(tool_name: str, tool_input: dict, polpoo: PolpooClient) 
             result = await polpoo.listar_usuarios(
                 show_active=tool_input.get("show_active", True),
             )
+        elif tool_name == "consultar_rutas_dia":
+            result = await polpoo.consultar_rutas_dia(tool_input["date"])
         elif tool_name == "tracking_evento":
             result = await polpoo.tracking_evento(tool_input)
         else:

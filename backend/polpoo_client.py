@@ -62,6 +62,8 @@ class PolpooClient:
                     "grant_type": "password",
                 },
             )
+            if resp.status_code in (401, 403):
+                raise PermissionError("Tu cuenta no tiene permisos de administrador para acceder a esta información.")
             resp.raise_for_status()
             data = resp.json()
             self._admin_token = data["access_token"]
@@ -128,6 +130,16 @@ class PolpooClient:
         if name: params["name"] = name
         async with httpx.AsyncClient(timeout=30) as http_client:
             resp = await http_client.get(f"{BASE_URL}/delivery_point_datatables", params=params, headers=await self._headers())
+            return resp.json()
+
+    async def consultar_rutas_dia(self, date: str) -> dict:
+        """Consulta todas las rutas asignadas y su información completa para un día."""
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.get(
+                f"{BASE_URL}/route/route_planning_route/assigned_datatables",
+                params={"dateDeliveryStart": date},
+                headers=await self._headers(),
+            )
             return resp.json()
 
     async def tracking_evento(self, payload: dict) -> dict:
