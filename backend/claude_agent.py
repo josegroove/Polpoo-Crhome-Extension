@@ -240,16 +240,11 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "listar_usuarios",
-            "description": "Lista los usuarios de la cuenta Polpoo. Permite buscar por nombre, email o filtrar por tipo de usuario y perfil. Devuelve nombre, apellido, email, teléfono, perfil, tipo y último acceso.",
+            "description": "Lista los usuarios de la cuenta Polpoo. Devuelve nombre, apellido, email, teléfono, perfil, tipo y último acceso.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "search": {"type": "string", "description": "Texto para buscar por nombre, email o apellido"},
-                    "show_active": {"type": "boolean", "description": "true = solo activos, false = todos. Por defecto true"},
-                    "profile_id": {"type": "string", "description": "ID de perfil para filtrar (opcional)"},
-                    "user_type_id": {"type": "string", "description": "ID de tipo de usuario para filtrar (opcional)"},
-                    "start": {"type": "integer", "description": "Índice de inicio para paginación (por defecto 0)"},
-                    "length": {"type": "integer", "description": "Número de resultados a devolver (por defecto 50)"},
+                    "show_active": {"type": "boolean", "description": "true = solo activos (por defecto), false = todos incluidos inactivos"},
                 },
             },
         },
@@ -340,12 +335,7 @@ async def _execute_tool(tool_name: str, tool_input: dict, polpoo: PolpooClient) 
             result = await polpoo.totalizadores_usuarios()
         elif tool_name == "listar_usuarios":
             result = await polpoo.listar_usuarios(
-                search=tool_input.get("search"),
                 show_active=tool_input.get("show_active", True),
-                profile_id=tool_input.get("profile_id"),
-                user_type_id=tool_input.get("user_type_id"),
-                start=tool_input.get("start", 0),
-                length=tool_input.get("length", 50),
             )
         elif tool_name == "tracking_evento":
             result = await polpoo.tracking_evento(tool_input)

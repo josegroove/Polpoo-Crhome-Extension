@@ -164,38 +164,11 @@ class PolpooClient:
             )
             return resp.json()
 
-    async def listar_usuarios(
-        self,
-        search: str = None,
-        show_active: bool = True,
-        profile_id: str = None,
-        user_type_id: str = None,
-        start: int = 0,
-        length: int = 50,
-    ) -> dict:
-        """Lista usuarios de la cuenta Polpoo con filtros opcionales."""
+    async def listar_usuarios(self, show_active: bool = True) -> dict:
+        """Lista usuarios de la cuenta Polpoo."""
         params = {
             "me": "true",
             "showActive": "true" if show_active else "false",
-            "profileId": profile_id or "",
-            "userTypeId": user_type_id or "",
-            "draw": 1,
-            "start": start,
-            "length": length,
-            "search[value]": search or "",
-            "search[regex]": "false",
-            # Columnas requeridas por DataTables
-            "columns[0][data]": "user_id_erp",   "columns[0][searchable]": "false", "columns[0][orderable]": "false",
-            "columns[1][data]": "company.name",   "columns[1][searchable]": "true",  "columns[1][orderable]": "true",
-            "columns[2][data]": "nationalId",     "columns[2][searchable]": "true",  "columns[2][orderable]": "true",
-            "columns[3][data]": "email",          "columns[3][searchable]": "true",  "columns[3][orderable]": "true",
-            "columns[4][data]": "name",           "columns[4][searchable]": "true",  "columns[4][orderable]": "true",
-            "columns[5][data]": "surname",        "columns[5][searchable]": "true",  "columns[5][orderable]": "true",
-            "columns[6][data]": "phone",          "columns[6][searchable]": "true",  "columns[6][orderable]": "true",
-            "columns[7][data]": "profile",        "columns[7][searchable]": "false", "columns[7][orderable]": "false",
-            "columns[8][data]": "user_type.name", "columns[8][searchable]": "true",  "columns[8][orderable]": "true",
-            "columns[9][data]": "last_login_at",  "columns[9][searchable]": "true",  "columns[9][orderable]": "true",
-            "columns[10][data]": "isActive",      "columns[10][searchable]": "true", "columns[10][orderable]": "true",
         }
         async with httpx.AsyncClient(timeout=30) as http_client:
             resp = await http_client.get(
