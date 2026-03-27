@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polpoo Agent - Configuración</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f6fa;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+    }
+
+    .header {
+      background: #1a2332;
+      color: white;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      height: 32px;
+      width: auto;
+      filter: brightness(0) invert(1);
+    }
+
+    .header p { font-size: 12px; opacity: 0.7; margin-top: 2px; }
+
+    .form { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .label-note {
+      font-size: 11px;
+      color: #6b7280;
+      font-weight: 400;
+    }
+
+    input {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+
+    input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+
+    .hint {
+      font-size: 11px;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    .hint code {
+      background: #f3f4f6;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9ca3af;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #f3f4f6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      padding-top: 4px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 11px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-primary:hover { background: #2563eb; }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+      padding: 11px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-secondary:hover { background: #e5e7eb; }
+
+    .alert {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .alert.success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .alert.error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .alert.visible { display: block; }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      width: 100%;
+      padding-right: 40px;
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      color: #9ca3af;
+      padding: 2px;
+    }
+
+    .toggle-pass:hover { color: #374151; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <img src="https://polpoo.com/wp-content/uploads/2023/05/logotipo-naranja.svg" alt="Polpoo" />
+      </div>
+    </div>
+
+    <div class="form">
+
+      <div class="alert" id="alert"></div>
+
+      <!-- BACKEND -->
+      <p class="section-title">Backend</p>
+
+      <div class="field">
+        <label>URL del Backend</label>
+        <input type="url" id="backendUrl" placeholder="https://polpoo-agent.onrender.com" />
+        <p class="hint">La URL de tu servidor desplegado en Render o Railway.</p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- CREDENCIALES POLPOO -->
+      <p class="section-title">Credenciales Polpoo</p>
+
+      <div class="field">
+        <label>Usuario <span class="label-note">— email de tu cuenta Polpoo</span></label>
+        <input type="email" id="polpooUsername" placeholder="tu@empresa.com" autocomplete="username" />
+      </div>
+
+      <div class="field">
+        <label>Contraseña</label>
+        <div class="password-wrap">
+          <input type="password" id="polpooPassword" placeholder="••••••••" autocomplete="current-password" />
+          <button class="toggle-pass" id="togglePass" type="button" title="Mostrar/ocultar contraseña">👁️</button>
+        </div>
+        <p class="hint">
+          Tus credenciales se guardan <strong>solo en tu navegador</strong> (chrome.storage local) y nunca se almacenan en el servidor.
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="actions">
+        <button class="btn-secondary" id="testBtn">Probar conexión</button>
+        <button class="btn-primary" id="saveBtn">Guardar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

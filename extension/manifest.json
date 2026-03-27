@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Polpoo AI Agent",
+  "version": "1.0.0",
+  "description": "Asistente IA para gestionar Polpoo con lenguaje natural",
+  "permissions": ["sidePanel", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "Abrir Polpoo Agent"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html"
+}

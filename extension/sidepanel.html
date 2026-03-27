@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polpoo Agent</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f6fa;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ─────────────────────────────────────── */
+    .header {
+      background: #1a2332;
+      color: white;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      height: 28px;
+      width: auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 28px;
+      width: auto;
+      filter: brightness(0) invert(1);
+    }
+
+    .header h1 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .icon-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* ── STATUS BAR ──────────────────────────────────── */
+    .status-bar {
+      background: #fff3cd;
+      border-bottom: 1px solid #ffc107;
+      padding: 6px 16px;
+      font-size: 11px;
+      color: #856404;
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-bar.visible { display: flex; }
+    .status-bar.error { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+    .status-bar.success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+
+    /* ── MESSAGES ────────────────────────────────────── */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .messages::-webkit-scrollbar { width: 4px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+
+    /* ── WELCOME ─────────────────────────────────────── */
+    .welcome {
+      text-align: center;
+      padding: 32px 16px;
+      color: #64748b;
+    }
+
+    .welcome-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .welcome h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .suggestions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .suggestion-btn {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+      color: #334155;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .suggestion-btn:hover {
+      background: #f0f9ff;
+      border-color: #3b82f6;
+      color: #1d4ed8;
+    }
+
+    /* ── MESSAGE BUBBLES ─────────────────────────────── */
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 90%;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user { align-self: flex-end; align-items: flex-end; }
+    .message.assistant { align-self: flex-start; align-items: flex-start; }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .message.user .bubble {
+      background: #3b82f6;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.assistant .bubble {
+      background: white;
+      color: #1e293b;
+      border-bottom-left-radius: 4px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .bubble pre {
+      background: #f1f5f9;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      overflow-x: auto;
+      margin: 6px 0;
+      white-space: pre-wrap;
+    }
+
+    .bubble code {
+      background: #f1f5f9;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+
+    /* ── TYPING INDICATOR ────────────────────────────── */
+    .typing-indicator .bubble {
+      background: white;
+      border: 1px solid #e2e8f0;
+      padding: 12px 16px;
+    }
+
+    .dots { display: flex; gap: 4px; align-items: center; }
+    .dot {
+      width: 6px; height: 6px;
+      background: #94a3b8;
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+
+    /* ── INPUT AREA ──────────────────────────────────── */
+    .input-area {
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      padding: 12px 16px;
+      flex-shrink: 0;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    textarea {
+      flex: 1;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      max-height: 120px;
+      min-height: 40px;
+      line-height: 1.5;
+      transition: border-color 0.15s;
+      background: #f8fafc;
+    }
+
+    textarea:focus { border-color: #3b82f6; background: white; }
+
+    textarea::placeholder { color: #94a3b8; }
+
+    .send-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .send-btn:hover { background: #2563eb; }
+    .send-btn:active { transform: scale(0.95); }
+    .send-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
+
+    .input-hint {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    /* ── NOT CONFIGURED ──────────────────────────────── */
+    .not-configured {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .not-configured-icon { font-size: 48px; }
+
+    .not-configured h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .not-configured p {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .config-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .config-btn:hover { background: #2563eb; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">
+        <img src="https://polpoo.com/wp-content/uploads/2023/05/logotipo-naranja.svg" alt="Polpoo" />
+      </div>
+      <h1>Agent</h1>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="clearBtn" title="Limpiar chat">🗑️</button>
+      <button class="icon-btn" id="settingsBtn" title="Configuración">⚙️</button>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar" id="statusBar"></div>
+
+  <!-- CONTENT: Not configured -->
+  <div class="not-configured" id="notConfigured" style="display:none">
+    <div class="not-configured-icon">🔧</div>
+    <h2>Configura el agente</h2>
+    <p>Necesitas introducir la URL de tu backend y las credenciales de Polpoo para empezar.</p>
+    <button class="config-btn" id="goToSettings">Abrir configuración</button>
+  </div>
+
+  <!-- CONTENT: Chat -->
+  <div class="messages" id="messages">
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">🚚</div>
+      <h2>¡Hola! Soy tu agente Polpoo</h2>
+      <p>Puedo gestionar rutas, albaranes, cobros, seguimiento y más. Escríbeme en lenguaje natural.</p>
+      <div class="suggestions">
+        <button class="suggestion-btn">📅 ¿Qué rutas hay planificadas para hoy?</button>
+        <button class="suggestion-btn">📍 ¿Dónde está el chófer Víctor ahora mismo?</button>
+        <button class="suggestion-btn">📦 Muéstrame el seguimiento de entregas de hoy</button>
+        <button class="suggestion-btn">👥 Busca el cliente "Bar Xaloc"</button>
+        <button class="suggestion-btn">💰 Consulta los cobros pendientes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUT AREA -->
+  <div class="input-area">
+    <div class="input-row">
+      <textarea
+        id="input"
+        placeholder="Escribe lo que quieres hacer..."
+        rows="1"
+      ></textarea>
+      <button class="send-btn" id="sendBtn" title="Enviar">➤</button>
+    </div>
+    <div class="input-hint">Enter para enviar · Shift+Enter para nueva línea</div>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
